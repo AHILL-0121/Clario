@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.env
+.github/copilot-instructions.md
+# Node
+node_modules/
+.next/
+out/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Docker
+*.log
+
+# Data / models
+data/faiss_index/
+*.whisper
+*.bin
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Markdown files (except README)
+*.md
+!README.md
+
+# Misc
+.DS_Store
+Thumbs.db

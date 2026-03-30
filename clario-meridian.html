@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clario — Meridian Design Specification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#FDFCF9;
+  color:#1C1815;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── CSS VARIABLES ─────────────────────────── */
+:root{
+  --signal:#C8412D;
+  --signal-light:#FEF0EE;
+  --signal-mid:#E5705B;
+  --forest:#1E6E4E;
+  --forest-light:#E8F5EF;
+  --sage:#5A876C;
+  --sage-light:#ECF2EE;
+  --ink:#1C1815;
+  --ink-80:#1C181580;
+  --cream:#F4F0E8;
+  --surface:#FDFCF9;
+  --stone:#5A554F;
+  --stone-light:#9E9890;
+  --border:#E3DDD4;
+  --border-mid:#C8C3BA;
+  --r-sm:6px;
+  --r-md:10px;
+  --r-lg:14px;
+  --r-xl:20px;
+  --ease-entrance:cubic-bezier(0.16,1,0.3,1);
+  --ease-hover:cubic-bezier(0.25,0.46,0.45,0.94);
+  --dur-fast:120ms;
+  --dur-mid:250ms;
+  --dur-slow:500ms;
+}
+
+
+
+/* ── SIDEBAR ─────────────────────────────── */
+#sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:240px;
+  background:var(--ink);
+  display:flex;flex-direction:column;
+  z-index:100;
+  transition:width var(--dur-slow) var(--ease-entrance);
+  overflow:hidden;
+}
+#sidebar.collapsed{width:60px}
+.sb-logo{
+  padding:24px 20px 20px;
+  border-bottom:1px solid #ffffff12;
+  flex-shrink:0;
+}
+.sb-logo-full{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:400;
+  color:#F4F0E8;letter-spacing:.02em;
+  white-space:nowrap;
+  transition:opacity var(--dur-mid);
+}
+.sb-logo-mono{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:400;color:#F4F0E8;
+  display:none;
+}
+#sidebar.collapsed .sb-logo-full{opacity:0;pointer-events:none;width:0;overflow:hidden}
+#sidebar.collapsed .sb-logo-mono{display:block}
+.sb-badge{
+  display:inline-block;margin-top:5px;
+  padding:2px 7px;border-radius:4px;
+  background:var(--signal);color:#F4F0E8;
+  font-size:9px;font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;white-space:nowrap;
+}
+#sidebar.collapsed .sb-badge{display:none}
+.sb-nav{flex:1;overflow-y:auto;padding:12px 0;scrollbar-width:thin;scrollbar-color:#ffffff18 transparent}
+.sb-section-lbl{
+  padding:12px 20px 5px;
+  font-size:9px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:#ffffff30;
+  white-space:nowrap;
+  transition:opacity var(--dur-mid);
+}
+#sidebar.collapsed .sb-section-lbl{opacity:0}
+.nav-btn{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:9px 16px;
+  background:transparent;border:none;cursor:none;
+  color:#9E9890;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:400;
+  transition:background var(--dur-fast),color var(--dur-fast);
+  border-left:2px solid transparent;
+  white-space:nowrap;text-align:left;
+  position:relative;
+}
+.nav-btn:hover{background:#ffffff0a;color:#F4F0E8}
+.nav-btn.active{
+  background:#ffffff0d;color:#F4F0E8;
+  border-left-color:var(--signal);
+}
+.nav-icon{
+  width:18px;height:18px;flex-shrink:0;
+  opacity:.7;transition:opacity var(--dur-fast);
+}
+.nav-btn:hover .nav-icon,.nav-btn.active .nav-icon{opacity:1}
+.nav-label{transition:opacity var(--dur-mid),width var(--dur-mid);overflow:hidden;}
+#sidebar.collapsed .nav-label{opacity:0;width:0;pointer-events:none}
+.sb-footer{
+  padding:16px;border-top:1px solid #ffffff12;flex-shrink:0;
+}
+.sb-toggle{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:8px 4px;background:transparent;border:none;cursor:none;
+  color:#5A554F;font-size:12px;transition:color var(--dur-fast);
+}
+.sb-toggle:hover{color:#9E9890}
+#sidebar.collapsed .sb-toggle-lbl{display:none}
+
+/* ── MAIN CONTENT ────────────────────────── */
+#main{
+  margin-left:240px;
+  transition:margin-left var(--dur-slow) var(--ease-entrance);
+  min-height:100vh;
+}
+#sidebar.collapsed ~ #main{margin-left:60px}
+
+/* ── TOP BAR ─────────────────────────────── */
+#topbar{
+  position:sticky;top:0;z-index:50;
+  background:#FDFCF9f0;
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.topbar-crumb{
+  font-size:12px;color:var(--stone-light);
+  display:flex;align-items:center;gap:6px;
+}
+.topbar-crumb span{color:var(--ink);font-weight:500}
+.topbar-meta{display:flex;align-items:center;gap:12px}
+.meta-badge{
+  padding:4px 10px;border-radius:999px;
+  background:var(--signal-light);color:var(--signal);
+  font-size:11px;font-weight:500;border:1px solid #C8412D22;
+}
+.meta-badge.green{background:var(--forest-light);color:var(--forest);border-color:#1E6E4E22}
+
+/* ── PAGE CONTENT ────────────────────────── */
+.page-content{
+  display:none;padding:36px 40px 60px;
+  animation:pageIn .45s var(--ease-entrance) both;
+}
+.page-content.active{display:block}
+@keyframes pageIn{
+  from{opacity:0;transform:perspective(800px) rotateX(6deg) translateY(16px)}
+  to{opacity:1;transform:perspective(800px) rotateX(0deg) translateY(0)}
+}
+
+/* ── PAGE HEADER ─────────────────────────── */
+.pg-hero{margin-bottom:32px}
+.pg-eyebrow{
+  font-size:10px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--stone-light);margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.pg-eyebrow::before{
+  content:'';width:20px;height:1px;background:var(--signal);display:block;
+}
+.pg-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:40px;font-weight:400;line-height:1.1;
+  color:var(--ink);margin-bottom:6px;
+}
+.pg-route{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;color:var(--stone-light);
+  margin-bottom:12px;
+}
+.pg-desc{
+  font-size:14px;color:var(--stone);
+  line-height:1.75;max-width:640px;
+}
+
+/* ── GRIDS ────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ── CARDS ────────────────────────────────── */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:20px;
+  margin-bottom:16px;
+  transition:border-color var(--dur-mid),transform var(--dur-mid) var(--ease-hover);
+}
+.card:hover{border-color:#C8412D28;transform:translateY(-2px)}
+.card-label{
+  font-size:10px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--stone-light);
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.card-label::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* ── SPEC ROWS ───────────────────────────── */
+.srow{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.srow:last-child{border-bottom:none;padding-bottom:0}
+.srow-key{
+  font-weight:500;color:var(--ink);
+  min-width:130px;flex-shrink:0;
+  font-size:12px;line-height:1.6;
+  padding-top:1px;
+}
+.srow-key::before{content:'·';color:var(--signal);margin-right:6px}
+.srow-val{color:var(--stone);line-height:1.7;font-size:13px}
+.srow-val code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;background:#F4F0E8;
+  padding:1px 5px;border-radius:3px;color:var(--ink);
+}
+
+/* ── CALLOUTS ────────────────────────────── */
+.callout{
+  padding:12px 16px;
+  border-left:3px solid var(--signal);
+  background:var(--signal-light);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+  margin-bottom:14px;
+  font-size:12.5px;color:#8B2E1E;line-height:1.7;
+}
+.callout.green{
+  border-left-color:var(--forest);
+  background:var(--forest-light);color:#145038;
+}
+.callout.sage{
+  border-left-color:var(--sage);
+  background:var(--sage-light);color:#3D5E4A;
+}
+.callout-title{font-weight:500;margin-bottom:4px;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ── PALETTE CHIPS ───────────────────────── */
+.palette-row{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.chip{display:flex;flex-direction:column;gap:5px;align-items:center}
+.chip-sw{
+  width:48px;height:48px;border-radius:var(--r-md);
+  border:1px solid var(--border);
+}
+.chip-name{font-size:10px;color:var(--stone-light);text-align:center;max-width:58px;line-height:1.3}
+.chip-hex{font-size:9px;color:var(--stone-light);font-family:'JetBrains Mono',monospace}
+
+/* ── TYPE SHOWCASE ───────────────────────── */
+.type-card{
+  padding:16px;border:1px solid var(--border);
+  border-radius:var(--r-md);margin-bottom:8px;
+}
+.type-name{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--stone-light);margin-bottom:8px;
+}
+.type-sample-xl{
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;font-weight:400;color:var(--ink);
+  line-height:1.15;margin-bottom:4px;
+}
+.type-sample-lg{
+  font-size:22px;font-weight:500;color:var(--ink);
+  line-height:1.2;margin-bottom:4px;
+}
+.type-sample-sm{font-size:13px;color:var(--stone);line-height:1.5}
+.type-sample-mono{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;color:var(--stone);
+}
+
+/* ── MOTION TOKENS ───────────────────────── */
+.motion-row{
+  display:flex;align-items:center;gap:12px;
+  padding:7px 12px;
+  background:#F4F0E8;border-radius:var(--r-sm);
+  margin-bottom:5px;font-size:12px;
+}
+.motion-key{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--stone);min-width:170px;
+}
+.motion-val{color:var(--ink);line-height:1.5}
+
+/* ── WIREFRAME ───────────────────────────── */
+.wire{
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;margin-bottom:20px;
+  box-shadow:0 1px 3px #00000008;
+}
+.wire-bar{
+  height:30px;background:#F4F0E8;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;gap:6px;
+}
+.wire-dot{width:8px;height:8px;border-radius:50%}
+.wire-url{
+  margin-left:10px;font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--stone-light);
+  flex:1;
+}
+.wire-body{display:flex;min-height:120px}
+.wire-side{
+  width:52px;background:var(--ink);flex-shrink:0;
+  padding:10px 8px;display:flex;flex-direction:column;gap:6px;
+}
+.wsi{height:32px;border-radius:5px;background:#ffffff18}
+.wsi.act{background:var(--signal)}
+.wire-main{flex:1;padding:14px;background:var(--surface)}
+.wblk{
+  background:#E3DDD4;border-radius:5px;margin-bottom:6px;
+}
+.wblk.red{background:#C8412D22}
+.wblk.green{background:#1E6E4E22}
+.wblk.cream{background:var(--cream)}
+.wgrid{display:grid;gap:7px;margin-bottom:8px}
+.wg4{grid-template-columns:repeat(4,1fr)}
+.wg3{grid-template-columns:repeat(3,1fr)}
+.wg2{grid-template-columns:repeat(2,1fr)}
+.wire-lbl{
+  font-size:9px;color:var(--stone-light);
+  padding:0 8px;line-height:1;
+  display:flex;align-items:center;height:100%;
+}
+
+/* ── STATUS BADGES ───────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:4px;
+  font-size:11px;font-weight:500;
+}
+.badge.red{background:var(--signal-light);color:var(--signal)}
+.badge.green{background:var(--forest-light);color:var(--forest)}
+.badge.sage{background:var(--sage-light);color:var(--sage)}
+.badge.ink{background:var(--ink);color:#F4F0E8}
+.badge.stone{background:#F4F0E8;color:var(--stone)}
+.badge.pill{border-radius:999px;padding:2px 10px}
+
+/* ── COLOR BARS ──────────────────────────── */
+.color-bar{height:4px;border-radius:2px;margin:8px 0 14px}
+.bar-red{background:linear-gradient(90deg,var(--signal),var(--signal-mid))}
+.bar-green{background:linear-gradient(90deg,var(--forest),#2EA56E)}
+.bar-sage{background:linear-gradient(90deg,var(--sage),#80B094)}
+
+/* ── SECTION DIVIDER ─────────────────────── */
+.divider{
+  height:1px;background:var(--border);
+  margin:28px 0;position:relative;
+}
+.divider-label{
+  position:absolute;top:50%;left:0;
+  transform:translateY(-50%);
+  background:var(--surface);padding:0 12px 0 0;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--stone-light);
+}
+
+/* ── UNIQUE MOMENT CARD ──────────────────── */
+.moment{
+  background:var(--ink);
+  border-radius:var(--r-lg);
+  padding:20px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.moment::before{
+  content:'';position:absolute;top:0;right:0;
+  width:80px;height:80px;
+  border-radius:0 0 0 80px;
+  background:var(--signal);opacity:.15;
+}
+.moment-eyebrow{
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--signal);margin-bottom:8px;
+}
+.moment-text{color:#D4CFC8;font-size:13px;line-height:1.75}
+.moment-text strong{color:#F4F0E8;font-weight:500}
+
+/* ── PAGE INTRO BAND ─────────────────────── */
+.intro-band{
+  display:flex;gap:20px;align-items:stretch;
+  margin-bottom:28px;
+  padding:20px;
+  background:var(--cream);
+  border-radius:var(--r-xl);
+  border:1px solid var(--border);
+}
+.intro-icon{
+  width:48px;height:48px;border-radius:var(--r-md);
+  background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:20px;
+}
+.intro-body{}
+.intro-title{font-size:15px;font-weight:500;margin-bottom:4px}
+.intro-sub{font-size:13px;color:var(--stone);line-height:1.65}
+
+/* ── SCROLL ANIMATIONS ───────────────────── */
+.reveal{
+  opacity:0;
+  transform:perspective(800px) rotateX(10deg) translateY(20px);
+  transition:opacity .5s var(--ease-entrance),transform .5s var(--ease-entrance);
+}
+.reveal.visible{opacity:1;transform:perspective(800px) rotateX(0deg) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ────────────────────────────── -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-full">Clario</div>
+    <div class="sb-logo-mono">C</div>
+    <div class="sb-badge">Meridian UI Spec</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section-lbl">Foundation</div>
+    <button class="nav-btn active" data-page="system">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 5v4l2.5 2.5"/></svg>
+      <span class="nav-label">Design System</span>
+    </button>
+    <div class="sb-section-lbl">Public Pages</div>
+    <button class="nav-btn" data-page="landing">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13L9 4l7 9H2z"/></svg>
+      <span class="nav-label">Landing Page</span>
+    </button>
+    <button class="nav-btn" data-page="login">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="2" width="12" height="14" rx="2"/><path d="M7 9h4M9 7v4"/></svg>
+      <span class="nav-label">Login / Register</span>
+    </button>
+    <button class="nav-btn" data-page="widget">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4h12v9H3z" rx="2"/><path d="M6 16l2-3h2l2 3"/></svg>
+      <span class="nav-label">Chat Widget</span>
+    </button>
+    <div class="sb-section-lbl">Dashboard</div>
+    <button class="nav-btn" data-page="dashboard">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="10" y="2" width="6" height="6" rx="1"/><rect x="2" y="10" width="6" height="6" rx="1"/><rect x="10" y="10" width="6" height="6" rx="1"/></svg>
+      <span class="nav-label">Main Dashboard</span>
+    </button>
+    <button class="nav-btn" data-page="tickets">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4h10M4 8h10M4 12h6"/></svg>
+      <span class="nav-label">Tickets List</span>
+    </button>
+    <button class="nav-btn" data-page="detail">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="14" height="14" rx="2"/><path d="M6 9h6M6 12h4"/></svg>
+      <span class="nav-label">Ticket Detail</span>
+    </button>
+    <button class="nav-btn" data-page="customers">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="6" r="3"/><path d="M3 15c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+      <span class="nav-label">Customers</span>
+    </button>
+    <button class="nav-btn" data-page="analytics">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 14l4-5 3 2 4-6"/><path d="M3 16h12"/></svg>
+      <span class="nav-label">Analytics</span>
+    </button>
+    <button class="nav-btn" data-page="team">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="6" r="2.5"/><circle cx="12" cy="6" r="2.5"/><path d="M1 15c0-2.8 2.2-5 5-5M7 15c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+      <span class="nav-label">Team</span>
+    </button>
+    <button class="nav-btn" data-page="kb">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 2h8l4 4v10H4V2z"/><path d="M12 2v4h4"/><path d="M6 9h6M6 12h4"/></svg>
+      <span class="nav-label">Knowledge Base</span>
+    </button>
+    <button class="nav-btn" data-page="policies">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 2L3 5v5c0 3.5 2.6 6.8 6 7.5C12.4 16.8 15 13.5 15 10V5L9 2z"/></svg>
+      <span class="nav-label">Policies</span>
+    </button>
+    <button class="nav-btn" data-page="ai">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 3a5.5 5.5 0 0 1 5.5 5.5c0 1.5-.6 2.9-1.6 3.9L15 16H9A5.5 5.5 0 0 1 3.5 8.5 5.5 5.5 0 0 1 9 3z"/><path d="M7 9h4M9 7v4"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </button>
+    <button class="nav-btn" data-page="settings">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="2.5"/><path d="M9 2v2M9 14v2M2 9h2M14 9h2M4 4l1.5 1.5M12.5 12.5l1.5 1.5M4 14l1.5-1.5M12.5 5.5l1.5-1.5"/></svg>
+      <span class="nav-label">Settings</span>
+    </button>
+    <button class="nav-btn" data-page="admin">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 1L11 7h6L12.5 11l2 6L9 13.5 4.5 17l2-6L2 7h6L9 1z"/></svg>
+      <span class="nav-label">Platform Admin</span>
+    </button>
+  </div>
+  <div class="sb-footer">
+    <button class="sb-toggle" id="sidebarToggle">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h12M2 8h8M2 12h12"/></svg>
+      <span class="sb-toggle-lbl" style="font-size:12px">Collapse sidebar</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── MAIN ───────────────────────────────── -->
+<div id="main">
+  <div id="topbar">
+    <div class="topbar-crumb">
+      Clario &nbsp;/&nbsp; <span id="crumb-text">Design System</span>
+    </div>
+    <div class="topbar-meta">
+      <span class="badge red pill">Meridian Theme</span>
+      <span class="badge green pill">Light · v1.0</span>
+    </div>
+  </div>
+
+  <!-- ── DESIGN SYSTEM ─────────────────── -->
+  <div class="page-content active" id="page-system">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Global Tokens</div>
+      <div class="pg-title">Meridian Design System</div>
+      <div class="pg-route">Typography · Color · Motion · Components · Interactions</div>
+      <div class="pg-desc">Support flows like meridian lines — invisible pathways connecting distant points with precision and warmth. Every token in this system reinforces a single brand promise: intelligent, human-scale support. No purple. No blue. No amber.</div>
+    </div>
+
+    <div class="divider"><span class="divider-label">Color Palette</span></div>
+    <div class="card reveal">
+      <div class="card-label">Ten-color foundation</div>
+      <div class="palette-row">
+        <div class="chip"><div class="chip-sw" style="background:#C8412D"></div><div class="chip-name">Signal Red</div><div class="chip-hex">#C8412D</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#FEF0EE;border-color:#E3DDD4"></div><div class="chip-name">Signal Tint</div><div class="chip-hex">#FEF0EE</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#1E6E4E"></div><div class="chip-name">Forest</div><div class="chip-hex">#1E6E4E</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#E8F5EF;border-color:#E3DDD4"></div><div class="chip-name">Forest Tint</div><div class="chip-hex">#E8F5EF</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#5A876C"></div><div class="chip-name">Sage</div><div class="chip-hex">#5A876C</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#ECF2EE;border-color:#E3DDD4"></div><div class="chip-name">Sage Tint</div><div class="chip-hex">#ECF2EE</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#1C1815"></div><div class="chip-name">Warm Ink</div><div class="chip-hex">#1C1815</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#F4F0E8;border-color:#E3DDD4"></div><div class="chip-name">Cream</div><div class="chip-hex">#F4F0E8</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#5A554F"></div><div class="chip-name">Stone</div><div class="chip-hex">#5A554F</div></div>
+        <div class="chip"><div class="chip-sw" style="background:#E3DDD4;border-color:#ccc"></div><div class="chip-name">Border</div><div class="chip-hex">#E3DDD4</div></div>
+      </div>
+      <div class="g3" style="margin-top:12px">
+        <div class="callout" style="margin-bottom:0"><div class="callout-title">Signal Red</div>Primary CTAs, escalation alerts, error states, active sidebar indicator. Never decorative.</div>
+        <div class="callout green" style="margin-bottom:0"><div class="callout-title">Forest Green</div>Resolved states, success toasts, automation rate, AI confidence, positive trend arrows.</div>
+        <div class="callout sage" style="margin-bottom:0"><div class="callout-title">Sage</div>Secondary buttons, hover states, info badges, KB tags, non-critical status. The workhorse.</div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-label">Typography</span></div>
+    <div class="g3 reveal">
+      <div class="type-card">
+        <div class="type-name">Display · Cormorant Garamond · Marketing</div>
+        <div class="type-sample-xl">Intelligent support,<br>at human scale.</div>
+        <div class="type-sample-sm">Landing hero, section headings, pricing titles, pull quotes</div>
+      </div>
+      <div class="type-card">
+        <div class="type-name">Interface · DM Sans · Dashboard & App</div>
+        <div class="type-sample-lg">42 tickets resolved today</div>
+        <div class="type-sample-sm">Stat cards, labels, nav items, table data, form fields, body copy throughout the app</div>
+      </div>
+      <div class="type-card">
+        <div class="type-name">Code · JetBrains Mono · IDs & Metadata</div>
+        <div class="type-sample-mono">#TKT-00842 · conf: 0.94<br>latency: 218ms · score: 0.71</div>
+        <div class="type-sample-sm">Ticket IDs, AI confidence, code, API keys, timestamps</div>
+      </div>
+    </div>
+    <div class="card reveal">
+      <div class="card-label">Type Scale</div>
+      <div class="g2" style="margin-bottom:0">
+        <div>
+          <div class="srow"><span class="srow-key">Display 1</span><span class="srow-val">Cormorant Garamond 56px / 400 — landing hero only</span></div>
+          <div class="srow"><span class="srow-key">Display 2</span><span class="srow-val">Cormorant Garamond 40px / 400 — section headings</span></div>
+          <div class="srow"><span class="srow-key">Display 3</span><span class="srow-val">Cormorant Garamond 28px / 400 — page titles on public pages</span></div>
+          <div class="srow"><span class="srow-key">Heading</span><span class="srow-val">DM Sans 22px / 500 — dashboard page titles</span></div>
+        </div>
+        <div>
+          <div class="srow"><span class="srow-key">Subheading</span><span class="srow-val">DM Sans 16px / 500 — card titles, modal headers</span></div>
+          <div class="srow"><span class="srow-key">Body</span><span class="srow-val">DM Sans 14px / 400 — all body copy</span></div>
+          <div class="srow"><span class="srow-key">Caption</span><span class="srow-val">DM Sans 12px / 400 — meta text, timestamps, helper copy</span></div>
+          <div class="srow"><span class="srow-key">Label</span><span class="srow-val">DM Sans 11px / 500 · uppercase · 0.1em tracking — section labels</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-label">Motion & Animation</span></div>
+    <div class="g2 reveal">
+      <div>
+        <div class="card">
+          <div class="card-label">Easing Tokens</div>
+          <div class="motion-row"><span class="motion-key">--ease-entrance</span><span class="motion-val">cubic-bezier(0.16, 1, 0.3, 1) — springy, decisive</span></div>
+          <div class="motion-row"><span class="motion-key">--ease-exit</span><span class="motion-val">cubic-bezier(0.4, 0, 1, 1) — sharp, clean</span></div>
+          <div class="motion-row"><span class="motion-key">--ease-hover</span><span class="motion-val">cubic-bezier(0.25, 0.46, 0.45, 0.94)</span></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Duration Tokens</div>
+          <div class="motion-row"><span class="motion-key">--dur-fast</span><span class="motion-val">120ms — micro: toggle, checkbox, badge pulse</span></div>
+          <div class="motion-row"><span class="motion-key">--dur-mid</span><span class="motion-val">250ms — card hover, button press, tooltip</span></div>
+          <div class="motion-row"><span class="motion-key">--dur-slow</span><span class="motion-val">500ms — page entrance, modal open, sidebar</span></div>
+          <div class="motion-row"><span class="motion-key">--stagger-step</span><span class="motion-val">60ms — per-card delay offset on cascade</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">3D Entrance Reveal — Global Pattern</div>
+          <div class="srow"><span class="srow-key">Initial</span><span class="srow-val"><code>opacity:0; transform: perspective(800px) rotateX(12deg) translateY(24px) scale(0.97)</code></span></div>
+          <div class="srow"><span class="srow-key">Final</span><span class="srow-val"><code>opacity:1; transform: perspective(800px) rotateX(0) translateY(0) scale(1)</code></span></div>
+          <div class="srow"><span class="srow-key">Duration</span><span class="srow-val">500ms · ease-entrance</span></div>
+          <div class="srow"><span class="srow-key">Stagger</span><span class="srow-val">60ms per card — creates a cascade waterfall effect</span></div>
+          <div class="srow"><span class="srow-key">Trigger</span><span class="srow-val">IntersectionObserver (threshold: 0.1) — fires once, not on every scroll pass</span></div>
+          <div class="srow"><span class="srow-key">Usage</span><span class="srow-val">Every dashboard card, stat tile, landing section, ticket row, customer card</span></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Hover Effects System</div>
+          <div class="srow"><span class="srow-key">Dashboard card</span><span class="srow-val">translateY(-3px) + border-color shifts to <code>#C8412D22</code> over 250ms</span></div>
+          <div class="srow"><span class="srow-key">Ticket row</span><span class="srow-val">bg → <code>#FEF9F7</code>, 2px signal-red left border slides in (height 0→100%)</span></div>
+          <div class="srow"><span class="srow-key">Customer card</span><span class="srow-val">scale(1.02) + reveal action buttons (opacity 0→1, translateY 6px→0)</span></div>
+          <div class="srow"><span class="srow-key">CTA button</span><span class="srow-val">bg darkens 10%, translateY(-1px), "→" arrow slides 4px right</span></div>
+          <div class="srow"><span class="srow-key">KB article</span><span class="srow-val">Left meridian accent bar grows 0→3px over 180ms in sage</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-label">Loaders & Feedback</span></div>
+    <div class="card reveal">
+      <div class="card-label">Smooth Loading States</div>
+      <div class="g2" style="margin-bottom:0">
+        <div>
+          <div class="srow"><span class="srow-key">Page loader</span><span class="srow-val">Thin signal-red line at top of viewport, width 0→100% over 600ms, then fades with opacity 1→0</span></div>
+          <div class="srow"><span class="srow-key">Skeleton</span><span class="srow-val">Warm cream <code>#EDE8DF</code> base, shimmer sweep at 1.4s loop using background-position animation</span></div>
+          <div class="srow"><span class="srow-key">Button loading</span><span class="srow-val">Label fades, two warm-cream dots pulse in sequence (200ms offset)</span></div>
+        </div>
+        <div>
+          <div class="srow"><span class="srow-key">Chart render</span><span class="srow-val">Lines draw in left-to-right using stroke-dashoffset animation over 800ms</span></div>
+          <div class="srow"><span class="srow-key">Stat counter</span><span class="srow-val">Numbers count from 0 on mount, 700ms ease-out with CountUp.js</span></div>
+          <div class="srow"><span class="srow-key">AI thinking</span><span class="srow-val">Three forest-green dots, stagger-bounce at 0ms / 100ms / 200ms offset</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-label">Components</span></div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Button System</div>
+        <div class="srow"><span class="srow-key">Primary</span><span class="srow-val">bg <code>#C8412D</code> · cream text · 8px radius · 500 weight · no border</span></div>
+        <div class="srow"><span class="srow-key">Secondary</span><span class="srow-val">transparent bg · 1px <code>#5A876C</code> border · sage text · hover: sage-tint bg</span></div>
+        <div class="srow"><span class="srow-key">Ghost</span><span class="srow-val">transparent bg · no border · stone text · hover: cream bg</span></div>
+        <div class="srow"><span class="srow-key">Danger</span><span class="srow-val">signal-tint bg · signal-red text · 1px red-50 border</span></div>
+        <div class="srow"><span class="srow-key">Loading</span><span class="srow-val">Text fades → two bouncing dots → on resolve morphs to ✓</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Layout Tokens</div>
+        <div class="srow"><span class="srow-key">Sidebar</span><span class="srow-val">Expanded: 240px · Collapsed: 60px (icons only) · bg: Warm Ink</span></div>
+        <div class="srow"><span class="srow-key">Topbar</span><span class="srow-val">Height: 56px · bg: <code>#FDFCf9/90</code> + backdrop-blur 12px</span></div>
+        <div class="srow"><span class="srow-key">Content</span><span class="srow-val">Padding: 36px 40px · max readable width: 1160px</span></div>
+        <div class="srow"><span class="srow-key">Card radius</span><span class="srow-val">14px cards · 10px inner elements · 6px badges · 999px pills</span></div>
+        <div class="srow"><span class="srow-key">Border</span><span class="srow-val">Default: 1px <code>#E3DDD4</code> · Hover: 1px <code>#C8412D40</code> · Focus: 2px <code>#C8412D</code></span></div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-label">Custom Cursor</div>
+      <div class="srow"><span class="srow-key">Default state</span><span class="srow-val">10px circle, warm ink fill at 55% opacity — follows mouse with 80ms lerp lag</span></div>
+      <div class="srow"><span class="srow-key">Hover interactive</span><span class="srow-val">Expands to 32px diameter, fills signal-red at 12% opacity, solid red border 1.5px</span></div>
+      <div class="srow"><span class="srow-key">Hover button/link</span><span class="srow-val">Morphs to horizontal pill 42×18px in warm ink, cream text shows "→"</span></div>
+      <div class="srow"><span class="srow-key">Text areas</span><span class="srow-val">Standard I-beam cursor returns (cursor: text) — cursor hides in these zones</span></div>
+      <div class="srow"><span class="srow-key">Scope</span><span class="srow-val">Active on landing page and public chat widget only — disabled inside dashboard (performance)</span></div>
+    </div>
+  </div>
+
+  <!-- ── LANDING ───────────────────────────── -->
+  <div class="page-content" id="page-landing">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Public · Marketing</div>
+      <div class="pg-title">Landing Page</div>
+      <div class="pg-route">/ · Cormorant display · Parallax · Custom cursor</div>
+      <div class="pg-desc">Sets the brand personality in 3 seconds. Cormorant Garamond creates editorial warmth; Signal Red drives urgency. Three parallax depth layers make the page feel alive. Converts visitors to free-trial signups.</div>
+    </div>
+
+    <div class="wire reveal">
+      <div class="wire-bar"><div class="wire-dot" style="background:#ff5f56"></div><div class="wire-dot" style="background:#ffbd2e"></div><div class="wire-dot" style="background:#27c93f"></div><span class="wire-url">clario.ai/</span></div>
+      <div style="padding:12px;background:var(--surface)">
+        <div class="wblk" style="height:22px;display:flex;align-items:center;padding:0 10px;margin-bottom:8px"><span style="font-size:9px;color:var(--stone-light)">STICKY NAV — Logo · Features · Pricing · Login · "Start free →" (Signal Red)</span></div>
+        <div class="wblk red" style="height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;border:1px dashed #C8412D50">
+          <span style="font-size:10px;color:var(--signal);font-weight:500">HERO — Cormorant 56px · Signal Red CTA · Meridian grid bg</span>
+          <span style="font-size:9px;color:var(--stone-light)">Parallax layers: headline 0.3× · diagonal bg grid 0.1× · dot cluster 0.5×</span>
+        </div>
+        <div class="wgrid wg4" style="margin-top:8px">
+          <div class="wblk" style="height:44px;background:var(--ink)"></div>
+          <div class="wblk" style="height:44px;background:var(--ink)"></div>
+          <div class="wblk" style="height:44px;background:var(--ink)"></div>
+          <div class="wblk" style="height:44px;background:var(--ink)"></div>
+        </div>
+        <div class="wgrid wg3" style="margin-top:0">
+          <div class="wblk" style="height:70px"></div>
+          <div class="wblk" style="height:70px"></div>
+          <div class="wblk" style="height:70px"></div>
+        </div>
+        <div class="wblk" style="height:60px;margin-top:0"></div>
+        <div class="wgrid wg3" style="margin-top:0">
+          <div class="wblk" style="height:100px"></div>
+          <div class="wblk" style="height:100px;border:2px solid #C8412D50"></div>
+          <div class="wblk" style="height:100px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2 reveal">
+      <div>
+        <div class="card">
+          <div class="card-label">Section Breakdown</div>
+          <div class="srow"><span class="srow-key">Navbar</span><span class="srow-val">Sticky, bg <code>#FDFCF9/90</code> + backdrop-blur 12px. Logo: Cormorant wordmark. Nav links in Stone. CTA: "Start free →" in Signal Red, text-only (no bg).</span></div>
+          <div class="srow"><span class="srow-key">Hero</span><span class="srow-val">Full-viewport, bg cream <code>#F4F0E8</code>. Faint meridian diagonal grid (1px <code>#E3DDD4</code>, 30° angle) at 0.1× parallax. Headline: Cormorant 56px "Support your customers with the intelligence they deserve." Sub: DM Sans 18px Stone.</span></div>
+          <div class="srow"><span class="srow-key">Stats bar</span><span class="srow-val">Full-width Warm Ink bg. Four counters: 40–60% automation / &lt;5s response / &lt;2s CRM sync / 94% CSAT. Numbers in Cream, labels in Stone. Count-up fires on IntersectionObserver.</span></div>
+          <div class="srow"><span class="srow-key">Features</span><span class="srow-val">3-col grid. White cards, 1px border. Left accent bar: 0px → 4px signal-red on hover. Icon: thin-stroke SVG in Sage. Staggered 3D entrance (60ms apart).</span></div>
+          <div class="srow"><span class="srow-key">How it works</span><span class="srow-val">Horizontal timeline. 5 steps linked by dashed meridian line. Active circle fills Signal Red. On scroll each step activates with a ripple pulse (scale 1→1.5, opacity 1→0).</span></div>
+          <div class="srow"><span class="srow-key">Pricing</span><span class="srow-val">3 cards. Pro: 2px signal-red border + "Most popular" badge (signal-red bg, cream text). Price: Cormorant 40px. Checkmarks: Forest Green. Non-Pro cards dim to 90% opacity when hovering Pro.</span></div>
+          <div class="srow"><span class="srow-key">Testimonials</span><span class="srow-val">CSS scroll-snap horizontal carousel. Pause on hover. Quote: Cormorant italic 20px. Attribution: DM Sans 12px Stone. Auto-scrolls every 4s.</span></div>
+          <div class="srow"><span class="srow-key">CTA</span><span class="srow-val">Warm Ink bg. Cream headline in Cormorant. Side-by-side email input + "Get early access" button. Submit: button pulses → morphs to ✓ icon over 400ms.</span></div>
+          <div class="srow"><span class="srow-key">Footer</span><span class="srow-val">Cream bg. 4-column layout. Social icons: thin outline, hover fills signal-red tint at 20%.</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">Motion Choreography</div>
+          <div class="srow"><span class="srow-key">Hero entrance</span><span class="srow-val">Headline: <code>rotateX(10deg)→0 + translateY(30px)→0</code>, 700ms. Subtext: +300ms delay. Buttons: +500ms delay. Feels like the page "unfolds" top to bottom.</span></div>
+          <div class="srow"><span class="srow-key">Parallax layers</span><span class="srow-val">Headline: 0.3× scroll · Diagonal bg grid: 0.1× · Floating dot cluster: 0.5× — implemented via <code>requestAnimationFrame</code> + CSS <code>translateY</code></span></div>
+          <div class="srow"><span class="srow-key">Section reveals</span><span class="srow-val">IntersectionObserver on every section — 3D entrance fires once on first visibility. Cards cascade left-to-right within each row at 60ms stagger.</span></div>
+          <div class="srow"><span class="srow-key">Nav underline</span><span class="srow-val">Draws left-to-right on hover (width 0→100%), 1px Signal Red, 150ms ease-out.</span></div>
+          <div class="srow"><span class="srow-key">Pricing toggle</span><span class="srow-val">Monthly/Annual: sliding bg pill. Prices animate with a digit-flip effect (rotateX 90→0) as amounts change.</span></div>
+          <div class="srow"><span class="srow-key">Email input</span><span class="srow-val">On focus: left border signal red + label floats up. On valid email: forest-green ✓ fades in right side.</span></div>
+          <div class="srow"><span class="srow-key">Chat bubble</span><span class="srow-val">Appears after 3s via spring: <code>cubic-bezier(0.34, 1.56, 0.64, 1)</code> from scale(0). Unread badge pulses in Forest Green.</span></div>
+        </div>
+        <div class="moment reveal">
+          <div class="moment-eyebrow">✦ Unique Design Moment</div>
+          <div class="moment-text">The hero background contains an <strong>extremely subtle animated SVG</strong> of meridian latitude arcs (opacity 0.04) that drift upward at a 120s loop interval — visible only on close inspection, creates a sense of quiet life without competing with the headline.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LOGIN ─────────────────────────────── -->
+  <div class="page-content" id="page-login">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Public · Auth</div>
+      <div class="pg-title">Login / Register</div>
+      <div class="pg-route">/login · Multi-tenant signup · Split screen</div>
+      <div class="pg-desc">Split-screen with an ambient animated illustration left and the form right. Warm and trustworthy — not a generic SaaS login box.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Layout & Panels</div>
+        <div class="srow"><span class="srow-key">Left panel</span><span class="srow-val">40vw. Warm Ink bg. Contains: Cormorant wordmark in Cream, animated meridian globe SVG (thin lines rotating slowly at 30s/revolution, 0.5px Cream at 20% opacity), a customer quote in Cormorant italic 22px, and attribution in Stone 12px.</span></div>
+        <div class="srow"><span class="srow-key">Right panel</span><span class="srow-val">60vw. Cream bg. Centered form card: white surface, 14px radius, 1px border. Tabs: "Sign in" / "Create account" — sliding warm-ink pill indicator.</span></div>
+        <div class="srow"><span class="srow-key">Form fields</span><span class="srow-val">DM Sans 14px. Labels float above on focus (translateY -20px, scale 0.85). Input bg: Cream. Focus border: 2px Signal Red. Height: 44px. 8px radius.</span></div>
+        <div class="srow"><span class="srow-key">Org name field</span><span class="srow-val">Register tab only. Slides down with height animation (max-height 0→52px, 200ms). Placeholder: "Acme Solutions Pvt Ltd"</span></div>
+        <div class="srow"><span class="srow-key">Submit</span><span class="srow-val">Full-width Signal Red. Cream text "Sign in →". Loading: dots bounce. Success: text morphs to ✓ over 400ms then redirects.</span></div>
+        <div class="srow"><span class="srow-key">Error state</span><span class="srow-val">Input border → Signal Red. Error message slides down (translateY -8px→0, opacity 0→1, 200ms) in Signal Red 12px italic.</span></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">Animation Details</div>
+          <div class="srow"><span class="srow-key">Entrance</span><span class="srow-val">Left panel slides in from left (translateX -40px→0, opacity 0→1, 600ms). Right panel fades in 150ms after. The two panels feel like a book opening.</span></div>
+          <div class="srow"><span class="srow-key">Globe rotation</span><span class="srow-val">SVG meridian grid (longitude + latitude curves) rotates 360° on X-axis at 30s/revolution. Lines: 0.5px Cream at 20% opacity — evokes precision and global scale.</span></div>
+          <div class="srow"><span class="srow-key">Tab switch</span><span class="srow-val">Form fields crossfade (opacity 0→1, 200ms). New fields 3D entrance: <code>rotateX(6deg)→0</code>. Left-panel customer quote dissolves to a new one matching the tab context.</span></div>
+        </div>
+        <div class="moment">
+          <div class="moment-eyebrow">✦ Unique Design Moment</div>
+          <div class="moment-text">A thin <strong>meridian line</strong> traces from the globe illustration on the left panel, passes through the vertical divider as a hairline stroke, and terminates at the Submit button on the right — visible only when hovering the button. 0.5px Signal Red, opacity 0→0.6 on hover.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ──────────────────────────── -->
+  <div class="page-content" id="page-dashboard">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Protected · Real-time</div>
+      <div class="pg-title">Main Dashboard</div>
+      <div class="pg-route">/dashboard · Role-based · WebSocket live updates</div>
+      <div class="pg-desc">The command center. Data-dense but calm. Stat cards count up on load, charts draw left-to-right, and WebSocket events pulse indicators when new data arrives. The Warm Ink sidebar is the structural spine.</div>
+    </div>
+    <div class="wire reveal">
+      <div class="wire-bar"><div class="wire-dot" style="background:#ff5f56"></div><div class="wire-dot" style="background:#ffbd2e"></div><div class="wire-dot" style="background:#27c93f"></div><span class="wire-url">clario.ai/dashboard</span></div>
+      <div class="wire-body">
+        <div class="wire-side">
+          <div class="wsi act"></div>
+          <div class="wsi"></div><div class="wsi"></div><div class="wsi"></div>
+          <div class="wsi"></div><div class="wsi"></div><div class="wsi"></div>
+        </div>
+        <div class="wire-main">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div class="wblk" style="height:14px;width:28%"></div>
+            <div class="wblk red" style="height:22px;width:18%"></div>
+          </div>
+          <div class="wgrid wg4" style="margin-bottom:10px">
+            <div class="wblk" style="height:64px"></div>
+            <div class="wblk red" style="height:64px"></div>
+            <div class="wblk green" style="height:64px"></div>
+            <div class="wblk" style="height:64px"></div>
+          </div>
+          <div class="wgrid wg2" style="margin-bottom:10px">
+            <div class="wblk" style="height:80px"></div>
+            <div class="wblk" style="height:80px"></div>
+          </div>
+          <div class="wblk" style="height:11px;width:22%;margin-bottom:6px"></div>
+          <div class="wblk" style="height:28px;margin-bottom:4px"></div>
+          <div class="wblk" style="height:28px;margin-bottom:4px"></div>
+          <div class="wblk" style="height:28px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Stat Cards — Top Row (4-col)</div>
+        <div class="srow"><span class="srow-key">Open Tickets</span><span class="srow-val">White card. Metric: DM Sans 32px/500 Warm Ink. Label: 11px uppercase Stone. Trend arrow: Forest Green ↑ or Signal Red ↓. 7-day sparkline below number.</span></div>
+        <div class="srow"><span class="srow-key">Escalations</span><span class="srow-val">Signal-Red tint bg. Number in Signal Red. Pulsing red dot top-right (scale 1→1.4→1 at 2s). Entrance: count-up from 0 in 700ms.</span></div>
+        <div class="srow"><span class="srow-key">Automation Rate</span><span class="srow-val">Forest tint bg. % in Forest Green. Mini donut ring (D3, 40px) surrounds the number. Arc draws clockwise on mount, 600ms.</span></div>
+        <div class="srow"><span class="srow-key">Avg Resolution</span><span class="srow-val">White card. "2h 14m" in DM Sans. Sparkline (7-day trend) below. Comparison to last week in 11px Stone below sparkline.</span></div>
+        <div class="srow"><span class="srow-key">Entrance</span><span class="srow-val">All 4 count from 0 simultaneously. 3D cascade: 0ms / 60ms / 120ms / 180ms delay.</span></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">Real-time Indicators</div>
+          <div class="srow"><span class="srow-key">WS status dot</span><span class="srow-val">Top-right of topbar. Forest green = connected. Stone = disconnected. Slow amber pulse = reconnecting. Hover tooltip shows latency in ms.</span></div>
+          <div class="srow"><span class="srow-key">Ticket update flash</span><span class="srow-val">On <code>ticket_updated</code> event: row flashes forest-green left border for 1.5s then fades. New rows slide from top (<code>translateY(-10px)→0</code>).</span></div>
+          <div class="srow"><span class="srow-key">Escalation toast</span><span class="srow-val">Slides in from right (<code>translateX(100%)→0</code>). Signal Red left border. Bell icon + ticket ID. Auto-dismiss 6s. Click navigates to ticket.</span></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Sidebar Design</div>
+          <div class="srow"><span class="srow-key">Background</span><span class="srow-val">Warm Ink <code>#1C1815</code>. Top: Cormorant wordmark in Cream. Bottom: user avatar monogram + logout.</span></div>
+          <div class="srow"><span class="srow-key">Nav icons</span><span class="srow-val">Lucide 20px. Default: Stone <code>#9E9890</code>. Active: Cream. Hover: Sage. Active left border: 2px Signal Red.</span></div>
+          <div class="srow"><span class="srow-key">Escalation badge</span><span class="srow-val">Signal Red dot on Tickets icon when unresolved escalations exist. Pulses (scale 1→1.3) at 2s interval — unmissable but not frantic.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TICKETS ───────────────────────────── -->
+  <div class="page-content" id="page-tickets">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Protected · Power-user table</div>
+      <div class="pg-title">Tickets List</div>
+      <div class="pg-route">/dashboard/tickets · Filters · Real-time rows</div>
+      <div class="pg-desc">A power-user table that's still beautiful. Each row is scannable at a glance: channel icon, status badge, frustration thermometer, agent avatar, time-ago. Filters are sticky above the table.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Filter Bar (Sticky)</div>
+        <div class="srow"><span class="srow-key">Layout</span><span class="srow-val">Cream bg, 1px bottom border. Search input left. Filter pills right: Status · Channel · Agent · Date range.</span></div>
+        <div class="srow"><span class="srow-key">Active filter</span><span class="srow-val">Pill fills Warm Ink bg + Cream text. Clear × appears inside. Overflow collapses to "+ 2 more" badge.</span></div>
+        <div class="srow"><span class="srow-key">Search</span><span class="srow-val">Real-time filter (300ms debounce). Non-matching rows opacity → 0.3 rather than hiding — preserves spatial memory.</span></div>
+        <div class="srow"><span class="srow-key">Scroll behavior</span><span class="srow-val">Filter bar sticks at 56px (below topbar). Scrolling past: 1px separator shadow appears below bar.</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Table Columns & States</div>
+        <div class="srow"><span class="srow-key">Channel icon</span><span class="srow-val">14px SVG. WhatsApp: Sage. Email: Stone. Chat: Warm Ink. Leftmost column.</span></div>
+        <div class="srow"><span class="srow-key">Status badges</span><span class="srow-val">OPEN: sage bg/text · AI_DRAFTED: forest bg/text + ⚡ icon · ESCALATED: signal bg/text · CLOSED: stone bg/text · 4px radius</span></div>
+        <div class="srow"><span class="srow-key">Frustration col</span><span class="srow-val">4px wide × 28px tall thermometer bar. Red fill height scales 0→score. Tooltip: exact score on hover.</span></div>
+        <div class="srow"><span class="srow-key">Row hover</span><span class="srow-val">bg → <code>#FEF9F7</code>. 2px left border slides in (Signal Red, height animates 0→100% over 150ms). Entire row clickable.</span></div>
+      </div>
+    </div>
+    <div class="moment reveal">
+      <div class="moment-eyebrow">✦ Unique Design Moment</div>
+      <div class="moment-text">Escalated ticket rows have a <strong>pulsing left border accent</strong> — a <code>::before</code> pseudo-element that breathes: <code>width: 2px → 4px → 2px</code> at a 2-second loop. Subtle enough not to be alarming, visible enough to draw the eye immediately to what needs attention.</div>
+    </div>
+  </div>
+
+  <!-- ── TICKET DETAIL ──────────────────────── -->
+  <div class="page-content" id="page-detail">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Protected · Most complex page</div>
+      <div class="pg-title">Ticket Detail</div>
+      <div class="pg-route">/dashboard/tickets/[id] · 3-column · AI draft · WebSocket</div>
+      <div class="pg-desc">Three-column layout: customer context left, message thread center, AI intelligence panel right. Each pane has its own scroll context. The AI draft reveal is the hero moment of the entire product.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">3-Column Layout</div>
+        <div class="srow"><span class="srow-key">Left — 260px</span><span class="srow-val">Customer card: 44px monogram avatar (Sage bg, Ink text), name, email, VIP badge (Signal Red), CRM source tag. Below: past tickets accordion. Below: circular frustration gauge (D3 arc, Signal Red on Cream ring).</span></div>
+        <div class="srow"><span class="srow-key">Center — flex</span><span class="srow-val">Message thread. Independent scroll. Customer bubbles: left-aligned, Cream bg. Agent bubbles: right-aligned, Warm Ink bg + Cream text. AI messages: centered, Forest tint bg + "AI" badge.</span></div>
+        <div class="srow"><span class="srow-key">Right — 280px</span><span class="srow-val">AI Draft panel (when AI_DRAFTED): white card, draft text, "Use draft ✓" (Forest Green filled) + "Edit" (ghost). Below: sentiment half-donut. Below: escalation risk bar.</span></div>
+        <div class="srow"><span class="srow-key">VIP flag</span><span class="srow-val">Customer card gets 1px Signal Red top border. "VIP" badge: red bg, cream text, 👑 icon. Avatar border pulses signal red at 3s loop.</span></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">AI Draft Reveal</div>
+          <div class="srow"><span class="srow-key">Entrance</span><span class="srow-val">Right panel animates in: <code>rotateX(8deg)→0 + opacity 0→1</code> over 500ms. Draft text streams character-by-character at 20ms/char (typewriter effect).</span></div>
+          <div class="srow"><span class="srow-key">"Use draft" action</span><span class="srow-val">Button → "Sending…" dots. Text pastes into reply box with a paste animation (cursor blinks twice). Reply box border pulses Forest Green once (scale 1→1.02→1).</span></div>
+          <div class="srow"><span class="srow-key">Confidence badge</span><span class="srow-val">&gt;70%: Forest Green "Confidence: 94%" · &lt;70%: Signal Red "Low confidence — review carefully"</span></div>
+          <div class="srow"><span class="srow-key">Sentiment arc</span><span class="srow-val">D3 half-donut, 120px. Needle animates from center on load. Color shifts: Signal Red (frustrated) → Sage (neutral) → Forest Green (satisfied).</span></div>
+        </div>
+        <div class="moment">
+          <div class="moment-eyebrow">✦ Unique Design Moment</div>
+          <div class="moment-text">When a new WebSocket message arrives mid-conversation, the thread auto-scrolls with spring physics, and a <strong>thin Forest Green scanner line sweeps left→right</strong> across the new bubble once, then dissolves — like a receipt printer reading the message.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CUSTOMERS ──────────────────────────── -->
+  <div class="page-content" id="page-customers">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Protected · CRM-synced</div>
+      <div class="pg-title">Customers</div>
+      <div class="pg-route">/dashboard/customers · Grid + List toggle · Churn risk</div>
+      <div class="pg-desc">A grid of mini-profile cards with toggle-able list view. VIP customers get distinct visual treatment. Churn risk is encoded as a thin red strip at card bottom.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Card Grid Mode</div>
+        <div class="srow"><span class="srow-key">Card anatomy</span><span class="srow-val">White surface, 14px radius. Top: 44px monogram avatar (Sage bg). Name 16px/500. Email Stone 12px. CRM source badge bottom-left. Ticket count bottom-right. Churn strip: 0→4px red at very bottom — height proportional to churn score.</span></div>
+        <div class="srow"><span class="srow-key">VIP treatment</span><span class="srow-val">1px Signal Red top border. "VIP" badge top-right (red bg, cream text). Avatar ring pulses Signal Red at 3s.</span></div>
+        <div class="srow"><span class="srow-key">Card hover</span><span class="srow-val">scale(1.02) + 3 action buttons reveal over card bottom: View / Email / Escalate (bg darkens to 60% overlay). 200ms transition.</span></div>
+        <div class="srow"><span class="srow-key">CRM sync dot</span><span class="srow-val">Forest Green = synced &lt;1min · Stone = older sync · Signal Red = error. Tooltip shows "Synced 43s ago".</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Customer Profile Modal</div>
+        <div class="srow"><span class="srow-key">Header</span><span class="srow-val">Full-width Warm Ink banner. 72px monogram avatar. Name: Cormorant 32px Cream. Role/company: Stone. Stat chips: tickets open / total / CSAT.</span></div>
+        <div class="srow"><span class="srow-key">Tabs</span><span class="srow-val">Overview · Tickets · CRM Data · Sentiment History. Underline slides between tabs with 350ms ease-out transition.</span></div>
+        <div class="srow"><span class="srow-key">Sentiment timeline</span><span class="srow-val">Recharts line chart. Line color interpolates Signal Red → Forest Green matching actual score values. Goal: "is this customer getting happier?"</span></div>
+        <div class="srow"><span class="srow-key">Modal entrance</span><span class="srow-val">Slides up from bottom (<code>translateY(100%)→0</code>) over 400ms with Warm Ink overlay (opacity 0→0.6). Close: reverse slide-down + overlay fades.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ANALYTICS ──────────────────────────── -->
+  <div class="page-content" id="page-analytics">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Owner + Manager · BI Dashboard</div>
+      <div class="pg-title">Analytics</div>
+      <div class="pg-route">/dashboard/analytics · Recharts · AI Weekly Summary · Date scrubber</div>
+      <div class="pg-desc">The BI dashboard. Six interconnected charts in the Meridian palette. AI weekly summary as an editorial card. Every chart draws in on first view. A linked date-range scrubber controls all charts simultaneously.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Chart Inventory</div>
+        <div class="srow"><span class="srow-key">Weekly tickets</span><span class="srow-val">Recharts Area chart. Fill: signal-red tint. Line: Signal Red. Stroke-dashoffset animation (0→path length) over 900ms on mount.</span></div>
+        <div class="srow"><span class="srow-key">Automation rate</span><span class="srow-val">Donut. Forest Green = automated, Stone = manual. Center: "58%" in 28px/500. Arcs draw clockwise on mount, 600ms.</span></div>
+        <div class="srow"><span class="srow-key">Channel breakdown</span><span class="srow-val">Horizontal bar chart. WhatsApp: Sage · Email: Warm Ink · Chat: Stone. Bars extend left-to-right on mount (600ms stagger, 80ms per bar).</span></div>
+        <div class="srow"><span class="srow-key">Escalation heatmap</span><span class="srow-val">7×24 grid (day × hour). Forest tint (low) → Signal Red (high) fill. Cells fade in row-by-row (7 rows × 40ms stagger). Hover: tooltip count.</span></div>
+        <div class="srow"><span class="srow-key">Resolution time</span><span class="srow-val">Two-line chart. This week: Warm Ink solid. Last week: Stone dashed. Legend inline above chart, not in a separate box.</span></div>
+        <div class="srow"><span class="srow-key">Churn risk scatter</span><span class="srow-val">X: ticket frequency · Y: sentiment score · Dot size: VIP flag · Color: Forest (safe) → Signal Red (at risk). Click dot → customer profile.</span></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">AI Weekly Summary Card</div>
+          <div class="srow"><span class="srow-key">Visual style</span><span class="srow-val">Full-width card. 4px Warm Ink left border. Header: "AI Business Digest — Week 23" in Cormorant 20px. Date in Stone 12px.</span></div>
+          <div class="srow"><span class="srow-key">Content sections</span><span class="srow-val">Key Insights (Forest Green bullets) · Risk Signals (Signal Red bullets) · Recommendations (Sage bullets). DM Sans 14px body.</span></div>
+          <div class="srow"><span class="srow-key">Generation loader</span><span class="srow-val">Three Forest Green bouncing dots while LLaMA generates. Text streams in word-by-word on completion.</span></div>
+          <div class="srow"><span class="srow-key">Export</span><span class="srow-val">"Download PDF" ghost button top-right. On click: brief button pulse, browser triggers download.</span></div>
+        </div>
+        <div class="moment">
+          <div class="moment-eyebrow">✦ Unique Design Moment</div>
+          <div class="moment-text">A <strong>dual-handle date-range scrubber</strong> at page top (Warm Ink track, Signal Red handles) controls all 6 charts simultaneously. As you drag either handle, every chart animates to its new data range in real time — a satisfying linked-view experience that feels like a conductor leading an orchestra.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TEAM ──────────────────────────────── -->
+  <div class="page-content" id="page-team">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Owner + Tenant Admin</div>
+      <div class="pg-title">Team Management</div>
+      <div class="pg-route">/dashboard/team · Agent cards · Subscription meter</div>
+      <div class="pg-desc">Agent cards with role badges and live online status. Subscription slot meter creates natural upgrade pressure. Invite and remove flows are inline — no separate pages.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Agent Card Grid</div>
+        <div class="srow"><span class="srow-key">Card anatomy</span><span class="srow-val">Sage bg monogram avatar + name + role badge + "X open tickets" stat. Online: pulsing Forest Green dot. Offline: Stone dot.</span></div>
+        <div class="srow"><span class="srow-key">Role badges</span><span class="srow-val">Owner: Warm Ink bg + Cream · Manager: Sage bg + deep sage · Agent: Stone bg + Ink · all 4px radius</span></div>
+        <div class="srow"><span class="srow-key">Invite modal</span><span class="srow-val">Slides up from bottom (<code>translateY(100%)→0</code>). Warm Ink overlay. White modal, 16px radius. Email input + role selector. Send: Signal Red button.</span></div>
+        <div class="srow"><span class="srow-key">Remove agent</span><span class="srow-val">Hover → red trash icon appears. Confirmation replaces card content inline: "Remove [Name]?" + Cancel / Confirm (no modal required).</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Subscription Slot Meter</div>
+        <div class="srow"><span class="srow-key">Visual</span><span class="srow-val">"3 of 10 agent slots used" — horizontal track. Warm Ink filled portion. Cream unfilled. Width animates on load. Above: DM Sans 14px label.</span></div>
+        <div class="srow"><span class="srow-key">80% warning</span><span class="srow-val">Signal Red tint banner above list: "8 of 10 slots used — Upgrade to Pro for more agents →". Dismissable with ×.</span></div>
+        <div class="srow"><span class="srow-key">100% full</span><span class="srow-val">Track fills completely in Signal Red. "Invite" button becomes disabled + tooltip "Upgrade required". Persistent banner (non-dismissable).</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KNOWLEDGE BASE ─────────────────────── -->
+  <div class="page-content" id="page-kb">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Owner + Manager · RAG brain</div>
+      <div class="pg-title">Knowledge Base</div>
+      <div class="pg-route">/dashboard/kb · Article editor · RAG preview panel</div>
+      <div class="pg-desc">The RAG brain of Clario. Editorial feel — this page looks like a well-organized wiki, not a database admin panel. Embedding status is first-class information.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Article List</div>
+        <div class="srow"><span class="srow-key">Layout</span><span class="srow-val">Left sidebar: category tree accordion (Warm Ink active indicator). Right: article list. Each article: title 15px/500, snippet Stone 13px, category tag (Sage), last-updated 11px.</span></div>
+        <div class="srow"><span class="srow-key">Article hover</span><span class="srow-val">Left Sage border grows 0→3px over 180ms. bg shifts to <code>#F9F7F3</code>. Edit pencil icon fades in on right.</span></div>
+        <div class="srow"><span class="srow-key">Embedding status</span><span class="srow-val">Per article: "Indexed" (Forest Green ✓) · "Pending" (Stone ◷) · "Failed" (Signal Red !) badge at right edge.</span></div>
+        <div class="srow"><span class="srow-key">New article</span><span class="srow-val">Floating "+" button (Warm Ink, fixed bottom-right). Click → editor slides in from right (translateX 100%→0, 350ms).</span></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">Article Editor</div>
+          <div class="srow"><span class="srow-key">Editor</span><span class="srow-val">Minimal Tiptap markdown editor. Title: Cormorant 28px at top. Toolbar: B / I / H / List / Link — Stone icons, hover fills Sage.</span></div>
+          <div class="srow"><span class="srow-key">Auto-save</span><span class="srow-val">Every 5s. Status chip top-right: "Saving…" → "Saved ✓" (Forest Green) → fades after 2s. On error: "Failed — Retry →" in Signal Red.</span></div>
+          <div class="srow"><span class="srow-key">Re-index button</span><span class="srow-val">"Rebuild embedding" ghost button. On click: spinning gear + "Indexing…". On complete: 4 dots radiate outward from button center (vector spark micro-animation).</span></div>
+        </div>
+        <div class="moment">
+          <div class="moment-eyebrow">✦ Unique Design Moment</div>
+          <div class="moment-text">A <strong>RAG Preview panel</strong> expands from the bottom of the page: enter a test query and see exactly which KB chunks Clario would retrieve, each highlighted in Sage with a horizontal relevance score bar beside it. Agents can test and tune before going live.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── POLICIES ───────────────────────────── -->
+  <div class="page-content" id="page-policies">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Owner Only · Escalation control</div>
+      <div class="pg-title">Policies & Guardrails</div>
+      <div class="pg-route">/dashboard/policies · Visual rule builder · Live formula preview</div>
+      <div class="pg-desc">The escalation rule builder and AI guardrails. Feels like a visual programming interface, not a settings form. The live formula preview makes abstract weights tangible.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Escalation Rule Builder</div>
+        <div class="srow"><span class="srow-key">Condition blocks</span><span class="srow-val">Stacked cards: "IF [sentiment &lt; X] AND [frequency &gt; Y] THEN escalate". Each block has a Warm Ink left border. "+ Add condition" uses Sage dashed border button.</span></div>
+        <div class="srow"><span class="srow-key">Weight sliders</span><span class="srow-val">Three sliders for Sentiment / Frequency / VIP weight. Signal Red track fill from left. Knob: Cream circle with 2px Warm Ink border. Dragging updates formula live.</span></div>
+        <div class="srow"><span class="srow-key">Formula preview</span><span class="srow-val">Live equation: <code>score = (0.50 × sentiment) + (0.30 × freq) + (0.20 × vip)</code> — weights update in real time as sliders move. JetBrains Mono 13px. Threshold line shown as dashed red line on a mini gauge.</span></div>
+        <div class="srow"><span class="srow-key">Test simulation</span><span class="srow-val">"Simulate" button runs the formula against last 100 tickets and shows: "Would have escalated X/100 tickets." Helps tune sensitivity.</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">AI Guardrails</div>
+        <div class="srow"><span class="srow-key">Toggle list</span><span class="srow-val">Each guardrail: label + description row + slide toggle. Forest Green = ON. Stone = OFF. Slide animation 200ms. Hover: row bg shifts to <code>#F4F0E8</code>.</span></div>
+        <div class="srow"><span class="srow-key">Blocked topics</span><span class="srow-val">Chip-input field. Type topic → Enter → chip appears with ×. Chips: Stone bg, Warm Ink text, 4px radius. Chips animate in (scale 0→1, 150ms spring).</span></div>
+        <div class="srow"><span class="srow-key">Confidence floor</span><span class="srow-val">Slider: "Show AI draft only above X% confidence". Dragging below 70%: warning callout slides down: "Low threshold may show poor-quality drafts."</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── AI CHAT ────────────────────────────── -->
+  <div class="page-content" id="page-ai">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Agent + Above · Sandbox</div>
+      <div class="pg-title">AI Chat Test Interface</div>
+      <div class="pg-route">/dashboard/ai · Model config · RAG sources expandable</div>
+      <div class="pg-desc">A sandbox where agents test the AI model before deployment. Polished terminal meets chat UI. The metadata strip below each response makes the AI's reasoning transparent.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Chat Interface</div>
+        <div class="srow"><span class="srow-key">Layout</span><span class="srow-val">Chat thread fills 60% width. Config panel fills 40% right. Chat bg: cream <code>#F4F0E8</code> with faint dot-grid (1px dots, 24px grid, 5% opacity).</span></div>
+        <div class="srow"><span class="srow-key">AI response</span><span class="srow-val">Forest tint bubble. Response streams character-by-character. Before streaming: three Forest Green bouncing dots in a bubble.</span></div>
+        <div class="srow"><span class="srow-key">Metadata strip</span><span class="srow-val">Below each AI reply: <code>Confidence: 94% · 3 KB sources · 218ms · Sentiment: +0.7</code>. JetBrains Mono 11px Stone. Click to expand KB source cards.</span></div>
+        <div class="srow"><span class="srow-key">Input</span><span class="srow-val">Full-width auto-expanding textarea (max 5 rows). Cream bg. Submit: Signal Red "Ask AI →". Shift+Enter = newline.</span></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">Config Panel (Right 40%)</div>
+          <div class="srow"><span class="srow-key">Temperature</span><span class="srow-val">0.0–1.0 slider. Left label "Precise", right "Creative". Track fills Forest Green from left. Current value in JetBrains Mono below slider.</span></div>
+          <div class="srow"><span class="srow-key">RAG toggle</span><span class="srow-val">Forest Green ON. When toggled OFF: chat bubbles shift from Forest tint to Stone tint — visual feedback that "no KB context" is active.</span></div>
+          <div class="srow"><span class="srow-key">Example prompts</span><span class="srow-val">Sage border pill buttons: "Refund request" / "Order tracking" / "Technical issue". Click → pre-fills input. Hover: fills Sage bg.</span></div>
+        </div>
+        <div class="moment">
+          <div class="moment-eyebrow">✦ Unique Design Moment</div>
+          <div class="moment-text">The <strong>expandable RAG Sources section</strong> below each AI reply slides down to reveal 3 mini KB article cards. The specific chunk that was retrieved is highlighted with a Sage left border and a faint Sage bg — agents can verify exactly what context the AI used.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS ───────────────────────────── -->
+  <div class="page-content" id="page-settings">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Owner Only</div>
+      <div class="pg-title">Settings</div>
+      <div class="pg-route">/dashboard/settings · Subscription · API Keys · CRM Webhooks</div>
+      <div class="pg-desc">Tabbed settings with high-stakes danger zone. Subscription meter creates natural upgrade pressure. Save feedback is immediate and satisfying. The danger zone is visually separated and requires deliberate intent.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Subscription Tab</div>
+        <div class="srow"><span class="srow-key">Plan card</span><span class="srow-val">Warm Ink border (2px). Plan name: Cormorant 24px. Token usage bar: Warm Ink fill. At &gt;80%: bar turns Signal Red + pulsing ! badge.</span></div>
+        <div class="srow"><span class="srow-key">Usage bar</span><span class="srow-val">Segmented: used tokens (Warm Ink) / remaining (Cream). Width animates on load. Label above: "50,000 / 200,000 tokens used this month".</span></div>
+        <div class="srow"><span class="srow-key">Upgrade CTA</span><span class="srow-val">Signal Red "Upgrade to Pro" button below bar when within 80%. On hover: brief shimmer effect sweeps across button.</span></div>
+        <div class="srow"><span class="srow-key">Invoice history</span><span class="srow-val">Minimal table. Date · Plan · Amount · "Download PDF" ghost button per row. Rows entrance with 40ms stagger.</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Other Tabs & Danger Zone</div>
+        <div class="srow"><span class="srow-key">API Keys tab</span><span class="srow-val">Keys: partial reveal <code>••••••abc</code>. Copy: clipboard icon → hover Sage. Revoke: Signal Red ghost. Create: "+" with Sage dashed border → slides down creation form.</span></div>
+        <div class="srow"><span class="srow-key">CRM Webhooks</span><span class="srow-val">Table: URL · source · last-ping · status dot. Test button sends ping → animates dot green → returns. Add new: slide-in form from right.</span></div>
+        <div class="srow"><span class="srow-key">Save feedback</span><span class="srow-val">Save button → loading → morphs to "Saved ✓" Forest Green → reverts after 2.5s. Form fields pulse Forest Green border on confirmation.</span></div>
+        <div class="srow"><span class="srow-key">Danger Zone</span><span class="srow-val">Bottom section with Signal Red tint bg + "Danger Zone" header. "Delete tenant" button: Signal Red filled. Confirmation: must type org name exactly. Input field appears after clicking, validates against known name.</span></div>
+        <div class="srow"><span class="srow-key">AI Model (Premium)</span><span class="srow-val">For lower plans: field is disabled, click shows Warm Ink overlay with cream text + Signal Red "Upgrade to Premium" button.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADMIN ──────────────────────────────── -->
+  <div class="page-content" id="page-admin">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Superuser Only · Restricted</div>
+      <div class="pg-title">Platform Admin</div>
+      <div class="pg-route">/admin · Tenant management · System health · Impersonation</div>
+      <div class="pg-desc">God-mode panel. Distinct visual treatment makes it clear you're in a privileged area. The persistent impersonation banner ensures you never forget which tenant you're viewing as.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Visual Treatment</div>
+        <div class="srow"><span class="srow-key">Admin header</span><span class="srow-val">Full-width Warm Ink banner: "Platform Administration" in Cormorant 22px Cream + "Superuser" badge in Signal Red. Unmissable — cannot be collapsed.</span></div>
+        <div class="srow"><span class="srow-key">Tenant table</span><span class="srow-val">Dense table: Name · Plan · Agents · Tickets/month · MRR · Status. Sortable columns (arrow icon on hover). Expandable rows: click to see all users in that tenant.</span></div>
+        <div class="srow"><span class="srow-key">Metrics overview</span><span class="srow-val">4 platform-wide stats at top: Total tenants · Active agents · Tickets/month · Platform MRR. All count-up on load.</span></div>
+        <div class="srow"><span class="srow-key">Impersonation</span><span class="srow-val">Per-row ghost "Login as tenant" button with 👁 icon. Confirmation modal required. While impersonating: persistent Signal Red top banner "Viewing as [Tenant] · Exit →"</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">System Health Panel</div>
+        <div class="srow"><span class="srow-key">Service grid</span><span class="srow-val">Cards: FastAPI · PostgreSQL · Redis · Celery · Ollama · Nginx. Each: service name + uptime % + last-check time + status dot (Green/Red).</span></div>
+        <div class="srow"><span class="srow-key">AI queue depth</span><span class="srow-val">Live-updating number: &lt;10 Forest Green · 10–50 Stone · &gt;50 Signal Red (with pulsing alert). Refreshes every 5s.</span></div>
+        <div class="srow"><span class="srow-key">Model status</span><span class="srow-val">Ollama card shows: model loaded (llama3.1:8b) + memory usage + avg response time. Pull new model: ghost button → progress bar appears inline.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WIDGET ─────────────────────────────── -->
+  <div class="page-content" id="page-widget">
+    <div class="pg-hero reveal">
+      <div class="pg-eyebrow">Public · Embeddable · CSR only</div>
+      <div class="pg-title">Customer Chat Widget</div>
+      <div class="pg-route">/chat · Fixed bottom-right · Spring entrance · Breathing indicator</div>
+      <div class="pg-desc">The public-facing customer experience. Warm and approachable — the antithesis of a cold chatbot. Enters with a spring bounce after 3 seconds. Breathes while thinking.</div>
+    </div>
+    <div class="g2 reveal">
+      <div class="card">
+        <div class="card-label">Collapsed Bubble State</div>
+        <div class="srow"><span class="srow-key">Design</span><span class="srow-val">48px circle. Warm Ink bg. "C" wordmark in Cream 18px Cormorant. Unread badge: Signal Red dot top-right, scales with count (shows number 1–9).</span></div>
+        <div class="srow"><span class="srow-key">Entrance</span><span class="srow-val">Appears 3s after page load. Spring: <code>cubic-bezier(0.34, 1.56, 0.64, 1)</code> from <code>scale(0)</code> → <code>scale(1)</code>, 500ms. Origin: bottom-right corner.</span></div>
+        <div class="srow"><span class="srow-key">Bubble hover</span><span class="srow-val">scale(1.08) over 150ms. Tooltip "Chat with us" appears above in Cream pill on Warm Ink bg.</span></div>
+        <div class="srow"><span class="srow-key">Open animation</span><span class="srow-val">Bubble morphs into window: scale(0.2, 0.1)→scale(1, 1) from bubble origin. Warm Ink bg expands, then content fades in. 350ms total.</span></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-label">Expanded Chat Window</div>
+          <div class="srow"><span class="srow-key">Dimensions</span><span class="srow-val">360×520px fixed card. Bottom-right with 24px margin.</span></div>
+          <div class="srow"><span class="srow-key">Header</span><span class="srow-val">Warm Ink bg. "Clario Support" Cream 14px/500. "Typically replies instantly" Stone 12px. Minimize × right.</span></div>
+          <div class="srow"><span class="srow-key">Chat area</span><span class="srow-val">Cream bg. Customer: right-aligned, Signal Red tint bubbles. AI/Agent: left-aligned, white bubbles with Sage left border. Timestamp: Stone 10px below each group.</span></div>
+          <div class="srow"><span class="srow-key">Input</span><span class="srow-val">Cream input, 1px border. Placeholder "Type your message…". Send: Signal Red icon button. Attachment: Sage paperclip icon.</span></div>
+          <div class="srow"><span class="srow-key">Agent handoff</span><span class="srow-val">System message: "You're now connected to Priya (Agent)" — Stone italic, centered, with hairline separators on each side.</span></div>
+        </div>
+        <div class="moment">
+          <div class="moment-eyebrow">✦ Unique Design Moment</div>
+          <div class="moment-text">The AI thinking bubble has a subtle <strong>breathing animation</strong> — <code>scale(1)→scale(1.02)→scale(1)</code> at 1.2s loop — making it feel physically alive while it processes. The three dot indicator also uses a secondary breathing on the bubble container, giving a two-layer organic pulse.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #main -->
+
+<script>
+// ── SIDEBAR TOGGLE ─────────────────
+const sidebar = document.getElementById('sidebar');
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+});
+
+// ── NAV ROUTING ────────────────────
+const navBtns = document.querySelectorAll('.nav-btn');
+const crumbText = document.getElementById('crumb-text');
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const page = btn.dataset.page;
+    navBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + page);
+    if (target) {
+      target.classList.add('active');
+      const label = btn.querySelector('.nav-label');
+      if (label) crumbText.textContent = label.textContent.trim();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // re-trigger reveals
+      target.querySelectorAll('.reveal').forEach((el, i) => {
+        el.classList.remove('visible');
+        setTimeout(() => el.classList.add('visible'), i * 80);
+      });
+    }
+  });
+});
+
+// ── SCROLL REVEAL ──────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── INITIAL REVEALS ────────────────
+setTimeout(() => {
+  document.querySelectorAll('#page-system .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 90);
+  });
+}, 100);
+</script>
+</body>
+</html>
