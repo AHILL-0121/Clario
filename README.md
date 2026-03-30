@@ -5897,8 +5897,8 @@ MIT License - See LICENSE file for details.
 
 1. **Fork the repository**
    ```bash
-   git clone https://github.com/yourusername/ai-sup.git
-   cd ai-sup
+   git clone https://github.com/AHILL-0121/Clario.git
+   cd Clario
    ```
 
 2. **Create a feature branch**
@@ -6012,10 +6012,8 @@ MIT License - See LICENSE file for details.
 ## 📧 Support & Community
 
 ### **Get Help**
-- **Documentation**: https://docs.aisupporthub.com
-- **Email**: support@aisupporthub.com
-- **Discord**: https://discord.gg/aisupporthub
-- **GitHub Issues**: https://github.com/yourusername/ai-sup/issues
+- **Email**: sa.education5211@gmail.com
+- **GitHub Issues**: https://github.com/AHILL-0121/Clario/issues
 - **Stack Overflow**: Tag `ai-support-saas`
 
 ### **Report Security Issues**
@@ -6065,10 +6063,10 @@ If you use this project in research or production:
 
 ```bibtex
 @software{ai_support_saas_2026,
-  author = {Your Name},
+  author = {Ahill},
   title = {AI-Powered Customer Support and Business Intelligence SaaS},
   year = {2026},
-  url = {https://github.com/yourusername/ai-sup},
+  url = {https://github.com/AHILL-0121/Clario},
   version = {1.0.0}
 }
 ```
@@ -6079,13 +6077,12 @@ If you use this project in research or production:
 
 ### **⭐ Star this repo if you find it useful! ⭐**
 
-[![Stars](https://img.shields.io/github/stars/yourusername/ai-sup?style=social)](https://github.com/yourusername/ai-sup/stargazers)
-[![Forks](https://img.shields.io/github/forks/yourusername/ai-sup?style=social)](https://github.com/yourusername/ai-sup/network/members)
+[![Stars](https://img.shields.io/github/stars/AHILL-0121/Clario?style=social)](https://github.com/AHILL-0121/Clario/stargazers)
+[![Forks](https://img.shields.io/github/forks/AHILL-0121/Clario?style=social)](https://github.com/AHILL-0121/Clario/network/members)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-**Made with ❤️ for MSMEs worldwide**
 
-[Report Bug](https://github.com/yourusername/ai-sup/issues) · [Request Feature](https://github.com/yourusername/ai-sup/issues) · [Join Discord](https://discord.gg/aisupporthub)
+[Report Bug](https://github.com/AHILL-0121/Clario/issues) · [Request Feature](https://github.com/AHILL-0121/Clario/issues) · 
 
 </div>
