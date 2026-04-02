@@ -8,7 +8,6 @@ import Pricing from "@/components/landing/Pricing"
 import Testimonials from "@/components/landing/Testimonials"
 import CTA from "@/components/landing/CTA"
 import Footer from "@/components/landing/Footer"
-import PublicCursor from "@/components/landing/PublicCursor"
 import RevealObserver from "@/components/landing/RevealObserver"
 
 // ssr:false — widget uses browser APIs; never rendered on the server
@@ -19,10 +18,9 @@ const CustomerChatWidget = dynamic(
 
 export default function LandingPage() {
   return (
-    <div className="bg-[#FDFCF9] min-h-screen cursor-target">
+    <div className="bg-[#FDFCF9] min-h-screen">
       <Navbar />
       <RevealObserver />
-      <PublicCursor />
       <main>
         <Hero />
         <Stats />

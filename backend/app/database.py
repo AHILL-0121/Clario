@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import text
 from app.config import settings
 
 engine = create_async_engine(
@@ -33,7 +34,14 @@ async def get_db() -> AsyncSession:
 
 
 async def init_db():
-    """Create all tables on startup."""
+    """Create all tables on startup and apply lightweight idempotent schema sync."""
     import app.models  # noqa: F401 – registers all ORM models with Base.metadata
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        if conn.dialect.name == "postgresql":
+            # Keep older databases compatible when new columns are added to existing tables.
+            await conn.execute(text("ALTER TABLE tickets ADD COLUMN IF NOT EXISTS share_token VARCHAR(64)"))
+            await conn.execute(text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS ix_tickets_share_token "
+                "ON tickets (share_token) WHERE share_token IS NOT NULL"
+            ))

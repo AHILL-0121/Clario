@@ -8,18 +8,52 @@ AI Service – wraps Ollama (LLaMA 3.1) for:
 """
 
 import asyncio
+import importlib
 import os
 import tempfile
 import time
 import uuid
-from typing import Optional
+from typing import Optional, Any
 
 import httpx
-import structlog
 from app.config import settings
 from app.services.rag_service import RAGService
 
-log = structlog.get_logger()
+
+class _FallbackLogger:
+    def __init__(self, name: str):
+        import logging
+        self._logger = logging.getLogger(name)
+
+    @staticmethod
+    def _format(message: str, fields: dict) -> str:
+        if not fields:
+            return message
+        extras = " ".join(f"{k}={v!r}" for k, v in fields.items())
+        return f"{message} {extras}"
+
+    def info(self, message: str, **fields):
+        self._logger.info(self._format(message, fields))
+
+    def warning(self, message: str, **fields):
+        self._logger.warning(self._format(message, fields))
+
+    def error(self, message: str, **fields):
+        self._logger.error(self._format(message, fields))
+
+    def critical(self, message: str, **fields):
+        self._logger.critical(self._format(message, fields))
+
+
+def _get_logger():
+    try:
+        structlog = importlib.import_module("structlog")
+        return structlog.get_logger()
+    except Exception:
+        return _FallbackLogger(__name__)
+
+
+log = _get_logger()
 rag_service = RAGService()
 
 
@@ -195,6 +229,10 @@ class AIService:
         """Return the full stored conversation history for a session."""
         return self._sessions.get(session_id, [])
 
+    def set_session_history(self, session_id: str, history: list[dict]):
+        """Seed or replace session history (used to restore room context from DB)."""
+        self._sessions[session_id] = history[-40:]
+
     async def generate_draft(self, ticket_id: str, tenant_id: str, message: str):
         """Background task: generate AI draft and save to DB."""
         from app.database import AsyncSessionLocal
@@ -258,7 +296,12 @@ class AIService:
         try:
             model = whisper.load_model(settings.WHISPER_MODEL)
             result = model.transcribe(tmp_path)
-            return result["text"].strip()
+            text_value: Any = result.get("text", "")
+            if isinstance(text_value, str):
+                return text_value.strip()
+            if isinstance(text_value, list):
+                return " ".join(str(part) for part in text_value).strip()
+            return str(text_value).strip()
         finally:
             os.unlink(tmp_path)
 

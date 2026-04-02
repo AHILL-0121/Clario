@@ -35,7 +35,7 @@ export default function TicketsPage() {
   const visibleTickets = useMemo(() => tickets ?? [], [tickets])
 
   return (
-    <div className="space-y-6 reveal" data-stagger="1">
+    <div className="space-y-6 reveal visible" data-stagger="1">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[10px] uppercase tracking-[0.12em] text-[#9E9890] mb-1">Protected · Power-user table</p>
