@@ -5,14 +5,47 @@ Runs before the server accepts requests; failures are logged clearly.
 
 import sys
 import logging
-import structlog
+import importlib
 import httpx
 import redis.asyncio as aioredis
 from sqlalchemy import text
 from app.config import settings
 from app.database import engine
 
-log = structlog.get_logger()
+
+class _FallbackLogger:
+    def __init__(self, name: str):
+        self._logger = logging.getLogger(name)
+
+    @staticmethod
+    def _format(message: str, fields: dict) -> str:
+        if not fields:
+            return message
+        extras = " ".join(f"{k}={v!r}" for k, v in fields.items())
+        return f"{message} {extras}"
+
+    def info(self, message: str, **fields):
+        self._logger.info(self._format(message, fields))
+
+    def warning(self, message: str, **fields):
+        self._logger.warning(self._format(message, fields))
+
+    def error(self, message: str, **fields):
+        self._logger.error(self._format(message, fields))
+
+    def critical(self, message: str, **fields):
+        self._logger.critical(self._format(message, fields))
+
+
+def _get_logger():
+    try:
+        structlog = importlib.import_module("structlog")
+        return structlog.get_logger()
+    except Exception:
+        return _FallbackLogger(__name__)
+
+
+log = _get_logger()
 
 # ── Silence SQLAlchemy & other noisy libs ────────────────────────────────────
 def silence_noisy_loggers():

@@ -144,10 +144,6 @@
     animation: breathing 1.2s ease-in-out infinite;
   }
 
-  .cursor-target {
-    cursor: none;
-  }
-
   @keyframes pageIn {
     from {
       opacity: 0;

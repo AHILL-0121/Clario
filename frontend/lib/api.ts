@@ -4,12 +4,28 @@ const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 export const api = axios.create({ baseURL: BASE })
 
+function getAuthToken(): string | null {
+  if (typeof window === "undefined") return null
+
+  const directToken = localStorage.getItem("access_token")
+  if (directToken) return directToken
+
+  // Fallback for sessions where token is present in Zustand persisted state only.
+  const persisted = localStorage.getItem("auth-storage")
+  if (!persisted) return null
+
+  try {
+    const parsed = JSON.parse(persisted) as { state?: { token?: string | null } }
+    return parsed.state?.token ?? null
+  } catch {
+    return null
+  }
+}
+
 // Attach JWT from localStorage on every request
 api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("access_token")
-    if (token) config.headers.Authorization = `Bearer ${token}`
-  }
+  const token = getAuthToken()
+  if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
@@ -68,9 +84,9 @@ export const authApi = {
 // Tickets
 export const ticketsApi = {
   list: (params?: { status?: string; skip?: number; limit?: number }) =>
-    api.get<Ticket[]>("/api/tickets", { params }),
+    api.get<Ticket[]>("/api/tickets/", { params }),
   get: (id: string) => api.get<Ticket>(`/api/tickets/${id}`),
-  create: (data: object) => api.post<Ticket>("/api/tickets", data),
+  create: (data: object) => api.post<Ticket>("/api/tickets/", data),
   update: (id: string, data: object) => api.patch<Ticket>(`/api/tickets/${id}`, data),
   messages: (id: string) => api.get(`/api/tickets/${id}/messages`),
   addMessage: (id: string, data: object) => api.post(`/api/tickets/${id}/messages`, data),
@@ -79,9 +95,9 @@ export const ticketsApi = {
 // Customers
 export const customersApi = {
   list: (params?: { search?: string; skip?: number; limit?: number }) =>
-    api.get<Customer[]>("/api/customers", { params }),
+    api.get<Customer[]>("/api/customers/", { params }),
   get: (id: string) => api.get<Customer>(`/api/customers/${id}`),
-  create: (data: object) => api.post<Customer>("/api/customers", data),
+  create: (data: object) => api.post<Customer>("/api/customers/", data),
 }
 
 // Analytics
@@ -93,7 +109,7 @@ export const analyticsApi = {
 
 // Subscriptions
 export const subscriptionsApi = {
-  get: () => api.get("/api/subscriptions"),
+  get: () => api.get("/api/subscriptions/"),
   upgrade: (plan: string) => api.post("/api/subscriptions/upgrade", { plan }),
 }
 
