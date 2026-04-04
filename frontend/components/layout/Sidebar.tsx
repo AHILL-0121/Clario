@@ -56,7 +56,7 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "meridian-sidebar min-h-screen border-r border-white/10 flex flex-col transition-all duration-500",
+        "meridian-sidebar sticky top-0 h-screen border-r border-white/10 flex flex-col overflow-hidden transition-all duration-500",
         collapsed ? "w-[60px]" : "w-[240px]"
       )}
     >
@@ -73,7 +73,7 @@ export default function Sidebar() {
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto py-3">
+      <div className="flex-1 py-3">
         {!collapsed && (
           <div className="px-5 pb-1 text-[9px] uppercase tracking-[0.1em] text-white/30">Navigation</div>
         )}

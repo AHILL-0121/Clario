@@ -30,9 +30,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!hasHydrated || !token) return null
 
   return (
-    <div className="min-h-screen flex bg-[#FDFCF9]">
+    <div className="h-screen overflow-hidden flex bg-[#FDFCF9]">
       {/* Sidebar */}
-      <aside className="w-64 min-h-screen meridian-sidebar border-r border-white/10 flex flex-col">
+      <aside className="w-64 sticky top-0 h-screen meridian-sidebar border-r border-white/10 flex flex-col overflow-hidden">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
           <div className="w-9 h-9 rounded-xl bg-[#F4F0E8] flex items-center justify-center shadow-sm">
             <BotMessageSquare className="h-5 w-5 text-[#1C1815]" />
@@ -76,7 +76,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 h-screen overflow-y-auto">{children}</main>
     </div>
   )
 }

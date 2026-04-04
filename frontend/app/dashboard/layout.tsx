@@ -43,9 +43,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!token) return null
 
   return (
-    <div className="flex min-h-screen meridian-surface">
+    <div className="flex h-screen overflow-hidden meridian-surface">
       <Sidebar />
-      <main className="flex-1 min-w-0">
+      <main className="flex-1 min-w-0 h-screen overflow-y-auto">
         <header className="sticky top-0 z-40 border-b border-[#E3DDD4] bg-[#FDFCF9F0] backdrop-blur-md h-14 px-8 flex items-center justify-between">
           <div className="text-xs text-[#9E9890]">
             Clario / <span className="text-[#1C1815] font-medium">{pageLabel}</span>
